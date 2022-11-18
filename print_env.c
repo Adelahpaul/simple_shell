@@ -1,19 +1,21 @@
 #include "shell.h"
 
-/**
-* print_env - prints the environment string to stdout
-*
-* Return: 0
-*/
-void print_env(void)
-{
-	int x = 0;
-	char **env = environ;
 
-	while (env[x])
+/**
+ * _getenv - prts env to standard output
+ *
+ * @env: enviroment
+ *
+ */
+
+void _getenv(char **env)
+{
+	size_t run = 0;
+
+	while (env[run])
 	{
-		write(STDOUT_FILENO, (const void *)env[x], _strlen(env[x]));
+		write(STDOUT_FILENO, env[run], _strlen(env[run]));
 		write(STDOUT_FILENO, "\n", 1);
-		x++;
+		run++;
 	}
 }
