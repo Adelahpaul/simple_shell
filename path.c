@@ -1,27 +1,46 @@
-include "shell.h"
-
+#include "shell.h"
 /**
-* find_path - finds the path from the global enviroment
-* Return: NULL if path is not found or path if path is found.
-*/
-char *find_path(void)
+ * _values_path - Separate the path in new strings.
+ * @arg: Command input of user.
+ * @env: Enviroment.
+ * Return: Pointer to strings.
+ */
+int _values_path(char **arg, char **env)
 {
-	int x;
-	char **env = environ, *path = NULL;
+	char *token = NULL, *path_rela = NULL, *path_absol = NULL;
+	size_t value_path, len;
+	struct stat stat_lineptr;
 
-	while (*env)
+	if (stat(*arg, &stat_lineptr) == 0)
+		return (-1);
+	path_rela = _get_path(env);/** gets the content of "PATH="*/
+	if (!path_rela)
+		return (-1);
+	token = strtok(path_rela, ":"); /**tokenizes the content of "PATH="*/
+	len = _strlen(*arg); /**gets length of arg*/
+	while (token)
 	{
-		if (_strncmp(*env, "PATH=", 5) == 0)
+		value_path = _strlen(token);
+		path_absol = malloc(sizeof(char) * (value_path + len + 2));
+		if (!path_absol)
 		{
-			path = *env;
-			while (*path && x < 5)
-			{
-				path++;
-				x++;
-			}
-			return (path);
+			free(path_rela);
+			return (-1);
 		}
-		env++;
+		path_absol = strcpy(path_absol, token);
+		_strcat(path_absol, "/");
+		_strcat(path_absol, *arg);
+
+		if (stat(path_absol, &stat_lineptr) == 0)
+		{
+			*arg = path_absol;
+			free(path_rela);
+			return (0);
+		}
+		free(path_absol);
+		token = strtok(NULL, ":");
 	}
-	return (NULL);
+	token = '\0';
+	free(path_rela);
+	return (-1);
 }
