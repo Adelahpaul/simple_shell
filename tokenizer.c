@@ -1,48 +1,38 @@
-#include "shell.h"
-
+include "shell.h"
 /**
-* tokenizer - creates tokens from given input
-* @line: to be tokenized
-*
-* Return: array of strings
-*/
-char **tokenizer(char *line)
+ * tokenize - tokenizes a stirng
+ * @lineptr: what the user inputed
+ * Return: a ptr to arr of ptrs
+ */
+
+char **tokenize(char *lineptr)
 {
-	char *buf = NULL, *bufp = NULL, *token = NULL, *delim = " :\t\r\n";
-	char **tokens = NULL;
-	int tokensize = 1;
-	size_t index = 0, flag = 0;
+	char **user_command = NULL;
+	char *token = NULL;
+	size_t i = 0;
+	int size = 0;
 
-	buf = _strdup(line);
-	if (!buf)
+	if (lineptr == NULL)
 		return (NULL);
-	bufp = buf;
 
-	while (*bufp)
+	for (i = 0; lineptr[i]; i++)
 	{
-		if (_strchr(delim, *bufp) != NULL && flag == 0)
-		{
-			tokensize++;
-			flag = 1;
-		}
-		else if (_strchr(delim, *bufp) == NULL && flag == 1)
-			flag = 0;
-		bufp++;
+		if (lineptr[i] == ' ')
+			size++;
 	}
-	tokens = malloc(sizeof(char *) * (tokensize + 1));
-	token = strtok(buf, delim);
-	while (token)
+	if ((size + 1) == _strlen(lineptr))
+		return (NULL);
+	user_command = malloc(sizeof(char *) * (size + 2));
+	if (user_command == NULL)
+		return (NULL);
+
+	token = strtok(lineptr, " \n\t\r");
+
+	for (i = 0; token != NULL; i++)
 	{
-		tokens[index] = _strdup(token);
-		if (tokens[index] == NULL)
-		{
-			free(tokens);
-			return (NULL);
-		}
-		token = strtok(NULL, delim);
-		index++;
+		user_command[i] = token;
+		token = strtok(NULL, " \n\t\r");
 	}
-	tokens[index] = '\0';
-	free(buf);
-	return (tokens);
+	user_command[i] = NULL;
+	return (user_command);
 }
